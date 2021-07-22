@@ -15,10 +15,10 @@
 
 let myBoard =(function(){
     'use strict'; 
-    //okay thank goodness 
-    let row1 = ["unset", "unset", "unset"];
-    let row2 = ["unset", "unset", "unset"];
-    let row3 = ["unset", "unset", "unset"];
+   
+    let row1 = ["unset", "x", "x"];
+    let row2 = ["unset", "b", "unset"];
+    let row3 = ["a", "unset", "c"];
 
     let entireBoard = [
         row1, 
@@ -44,6 +44,7 @@ let myBoard =(function(){
     function setPlace(userCharacter){
         console.log("please select which row you would like to place a character: ");
         rowSelection= prompt("please select 1-3");
+        rowSelection--;
         if(rowSelection < 1 && rowSelection >3){
             console.log("invalid row");
             setPlace();
@@ -51,26 +52,55 @@ let myBoard =(function(){
         console.log("now choose a column: ");
         columnSelect = prompt("please select 1-3");
         columnSelect--;
-        if(columnSelect < 0 && column > 3){
+        if(columnSelect < 0 && columnSelect > 3){
             console.log("invalid column");
             setPlace(); 
         }
 
         entireBoard[rowSelection][columnSelect] = userCharacter;
 
-        checkForWinner();
+        checkForWinner(rowSelection, columnSelect);
     }
 
-    function checkForWinner(){
-        let isWinner = false; 
+    function checkForWinner(row,col){
+        let isWinner = false;
         //we can use the properties of multidimensional arrays to help us 
-
-        for (let i =0; i < row1.length; i++){
-            for(let j =0; j < row1.length ; j++){
-                console.log(entireBoard[i][j]);
+        //it's easier to prove something false than true 
+        let horizontalMatch= true;
+        let verticalMatch = true;
+        let diagonalMatchL= true;
+        let diagonalMatchR= true;
+       
+        //check for a column/vertical match
+        for(let i =0; i < row1.length; i++){
+            console.log(entireBoard[i][row]);
+            if(entireBoard[i][row] !== userCharacter){
+                verticalMatch = false;
             }
-
         }
+        //check for a row/horizontal match
+        for(let i=0; i< row1.length; i++){
+            console.log(entireBoard[col][i]);
+            if(entireBoard[col][i] !== userCharacter){
+                horizontalMatch = false;
+            }
+        }
+
+        //and now for the diagonals 
+
+        for(let i=0; i< row1.length; i++){
+            if(entireBoard[i][i] !== userCharacter){
+                diagonalMatchL=false;
+            }
+        }
+        for (let i=0; i<row1.length; i++){
+            
+        }
+
+
+    
+    console.log(entireBoard);
+    
     }
 
     return {
