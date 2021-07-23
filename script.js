@@ -123,3 +123,26 @@ let myBoard =(function(){
 })();
 
 myBoard.start();
+// we need to create players and some how add theem into the module pattern
+//so, let's make the factory function and go from there 
+
+const Player = (playerName, playerCharacter) => {
+
+    const getName = () => playerName;
+    
+    const setChar = () => function(){
+
+        let userInput = prompt("please select 'x' or 'o': ");
+        
+        playerCharacter = userInput;
+    }
+    
+    const getChar = () => playerCharacter; 
+
+    return { getName, setChar, getChar };
+
+}
+//now for the HTML DOM 
+
+
+
