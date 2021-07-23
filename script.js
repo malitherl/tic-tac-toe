@@ -16,9 +16,9 @@
 let myBoard =(function(){
     'use strict'; 
    
-    let row1 = ["unset", "x", "x"];
-    let row2 = ["unset", "b", "unset"];
-    let row3 = ["a", "unset", "c"];
+    let row1 = ["unset", "sadf", "x"];
+    let row2 = ["unset", "x", "unset"];
+    let row3 = ["x", "unset", "asf"];
 
     let entireBoard = [
         row1, 
@@ -59,7 +59,9 @@ let myBoard =(function(){
 
         entireBoard[rowSelection][columnSelect] = userCharacter;
 
-        checkForWinner(rowSelection, columnSelect);
+       if(checkForWinner(rowSelection, columnSelect) === true){
+           console.log("game over!");
+       }
     }
 
     function checkForWinner(row,col){
@@ -73,14 +75,14 @@ let myBoard =(function(){
        
         //check for a column/vertical match
         for(let i =0; i < row1.length; i++){
-            console.log(entireBoard[i][row]);
+           // console.log(entireBoard[i][row]);
             if(entireBoard[i][row] !== userCharacter){
                 verticalMatch = false;
             }
         }
         //check for a row/horizontal match
         for(let i=0; i< row1.length; i++){
-            console.log(entireBoard[col][i]);
+            //console.log(entireBoard[col][i]);
             if(entireBoard[col][i] !== userCharacter){
                 horizontalMatch = false;
             }
@@ -93,13 +95,20 @@ let myBoard =(function(){
                 diagonalMatchL=false;
             }
         }
-        for (let i=0; i<row1.length; i++){
-            
+        
+        if(entireBoard[2][0] && entireBoard[1][1] && entireBoard[0][2] !== userCharacter){
+            diagonalMatchR = false;
+            console.log(diagonalMatchR);
         }
 
-
     
-    console.log(entireBoard);
+    //console.log(entireBoard);
+    
+        if(diagonalMatchR || diagonalMatchL || verticalMatch || horizontalMatch == true){
+            isWinner = true;
+        }
+    
+        return isWinner;
     
     }
 
