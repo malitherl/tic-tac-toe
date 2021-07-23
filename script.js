@@ -13,7 +13,7 @@
 
 //let's create something that can store the logic of the game and then we can link it up with the DOM 
 
-let myBoard =(function(){
+const myBoard =(function(){
     'use strict'; 
    
     let row1 = ["unset", "sadf", "x"];
@@ -25,21 +25,18 @@ let myBoard =(function(){
         row2, 
         row3
     ]
+    //we need the entire board as well to be able to display it 
+    const getBoard = () => {
+        return entireBoard;
+    }
+
 
     let userCharacter= "unset";
     let rowSelection = 0;
     let columnSelect = 0;
     //we kind of want a certain function to go off when we set a button, but the first step feels like we want to set 'x' or 'o' 
     //i'm fairly certain we'll wind up doing this in the factory function we use to make players but for now we're just storing it here
-    function setCharacter(){
-        console.log("Please select which character you would like (x/o):");
-        //take our first input 
-        userCharacter= prompt("please select 'x' or 'o': ");
-        if(userCharacter!== 'x' && userCharacter !== 'o'){
-            setCharacter();
-        }
-        setPlace(userCharacter);
-    }
+    
     //now for a function to choose where our character goes....
     function setPlace(userCharacter){
         console.log("please select which row you would like to place a character: ");
@@ -100,10 +97,6 @@ let myBoard =(function(){
             diagonalMatchR = false;
             console.log(diagonalMatchR);
         }
-
-    
-    //console.log(entireBoard);
-    
         if(diagonalMatchR || diagonalMatchL || verticalMatch || horizontalMatch == true){
             isWinner = true;
         }
@@ -112,17 +105,16 @@ let myBoard =(function(){
     
     }
 
-    return {
 
-        start: function(){
-           return setCharacter();
-        }   
-    };
-
+           return {
+               
+            getBoard, setPlace
+        
+        };
+          
 
 })();
 
-myBoard.start();
 // we need to create players and some how add theem into the module pattern
 //so, let's make the factory function and go from there 
 
@@ -134,7 +126,7 @@ const Player = (playerName, playerCharacter) => {
 
         let userInput = prompt("please select 'x' or 'o': ");
         
-        playerCharacter = userInput;
+        playerCharacter = userInput; 
     }
     
     const getChar = () => playerCharacter; 
@@ -143,6 +135,33 @@ const Player = (playerName, playerCharacter) => {
 
 }
 //now for the HTML DOM 
+
+const displayBoard =(function (){
+    'use strict';
+    //you can have a module pattern object inside another module pattern??
+
+    function generate (){
+        const container = document.querySelector("#container");
+        /** 
+         * first, we want to create a 3x3 grid 
+         * and each square corresponds to a different index in the gameboard
+         * we use a loop to attach an event listener to each 
+         * and the event listener will modify different values in the array 
+         * 
+         * and we may have to use data attributes to hook the array indices up to the HTML DOM elements 
+         */
+
+        for(let i = 0 ; i <  9 ; i++){
+            let boardPiece = document.createElement("DIV");
+            container.appendChild(boardPiece);
+        }
+    }
+
+
+
+
+
+})();
 
 
 
