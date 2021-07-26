@@ -38,27 +38,19 @@ const myBoard =(function(){
     //i'm fairly certain we'll wind up doing this in the factory function we use to make players but for now we're just storing it here
     
     //now for a function to choose where our character goes....
-    function setPlace(userCharacter){
-        console.log("please select which row you would like to place a character: ");
-        rowSelection= prompt("please select 1-3");
-        rowSelection--;
-        if(rowSelection < 1 && rowSelection >3){
-            console.log("invalid row");
-            setPlace();
-        }
-        console.log("now choose a column: ");
-        columnSelect = prompt("please select 1-3");
-        columnSelect--;
-        if(columnSelect < 0 && columnSelect > 3){
-            console.log("invalid column");
-            setPlace(); 
-        }
+    function setPlace(a, b, board){
+        rowSelection= a
+        
+      
+        
+        columnSelect = b
+   
+        
+        board[rowSelection][columnSelect] = userCharacter;
 
-        entireBoard[rowSelection][columnSelect] = userCharacter;
-
-       if(checkForWinner(rowSelection, columnSelect) === true){
-           console.log("game over!");
-       }
+    //    if(checkForWinner(rowSelection, columnSelect) === true){
+    //        console.log("game over!");
+    //    }
     }
 
     function checkForWinner(row,col){
@@ -139,7 +131,7 @@ const Player = (playerName, playerCharacter) => {
 const displayBoard =(function (){
     'use strict';
     //you can have a module pattern object inside another module pattern??
-
+    let boardData = myBoard.getBoard();
     function generate (){
         const container = document.querySelector("#container");
         /** 
@@ -150,18 +142,45 @@ const displayBoard =(function (){
          * 
          * and we may have to use data attributes to hook the array indices up to the HTML DOM elements 
          */
-
-        for(let i = 0 ; i <  9 ; i++){
-            let boardPiece = document.createElement("DIV");
-            container.appendChild(boardPiece);
+        const board = document.createElement("DIV");
+        board.setAttribute("class", "boardContainer");
+        for(let i =0; i < boardData[0].length ; i++){
+            for(let j =0; j < boardData[0].length ; j++){
+                let boardElem = document.createElement("DIV");
+                boardElem.setAttribute("id", "boardElement");
+                boardElem.textContent = boardData[i][j];
+                boardElem.addEventListener("click", function(e){
+                    myBoard.setPlace(i,j,boardData);
+                    boardElem.textContent = boardData[i][j];
+                })
+                board.appendChild(boardElem);
+            }
         }
+        container.appendChild(board);   
+    }
+    //alright now we want to create a function that will take a nodelist of all the elements here and add an event listener to each 
+    //because after all, the indices of the array above and on the board are the exact same 
+    function toggle(a,b){
+        const board= document.querySelector("#container");
+        const matches = container.querySelectAll("DIV");
+        let matchArray= Array.from(matches);
+        matchArray.forEach(function(elem){
+            elem.addEventListener("click", function(e){
+                
+                elem.textContent="hello";
+
+            })
+        })
+
+
     }
 
 
-
-
+    return {
+        generate
+    };
 
 })();
 
 
-
+displayBoard.generate();
