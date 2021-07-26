@@ -12,19 +12,21 @@
 //our first module pattern? 
 
 //let's create something that can store the logic of the game and then we can link it up with the DOM 
-
+//only thing left really is the ability to win the game 
+//and if we can avoid checking the same box twice
+//also reset button 
 const myBoard =(function(){
     'use strict'; 
    
-    let row1 = ["_", "_", "_"];
-    let row2 = ["_", "_", "_"];
-    let row3 = ["_", "_", "_"];
+    let row1 = ["1", "2", "3"];
+    let row2 = ["4", "5", "6"];
+    let row3 = ["7", "8", "9"];
 
     let entireBoard = [
         row1, 
         row2, 
         row3
-    ]
+    ] 
     //we need the entire board as well to be able to display it 
     const getBoard = () => {
         return entireBoard;
@@ -34,23 +36,25 @@ const myBoard =(function(){
     let userCharacter= "unset";
     let rowSelection = 0;
     let columnSelect = 0;
+    let isSet = false; 
     //we kind of want a certain function to go off when we set a button, but the first step feels like we want to set 'x' or 'o' 
     //i'm fairly certain we'll wind up doing this in the factory function we use to make players but for now we're just storing it here
     
     //now for a function to choose where our character goes....
     function setPlace(a, b, board, playerChar){
-        rowSelection= a
-        
-      
-        
-        columnSelect = b
-        userCharacter = playerChar;
-        
-        board[rowSelection][columnSelect] = userCharacter;
+        if(entireBoard[a][b] != playerChar){
+            rowSelection= a;
+            columnSelect = b;
+            userCharacter = playerChar;
+            
+            board[rowSelection][columnSelect] = userCharacter;
+            entireBoard[rowSelection][columnSelect] = userCharacter;
 
-    //    if(checkForWinner(rowSelection, columnSelect) === true){
-    //        console.log("game over!");
-    //    }
+            if(checkForWinner(rowSelection, columnSelect) === true){
+                console.log("game over!");
+            }
+        } 
+         
     }
 
     function checkForWinner(row,col){
@@ -64,17 +68,21 @@ const myBoard =(function(){
        
         //check for a column/vertical match
         for(let i =0; i < row1.length; i++){
-           // console.log(entireBoard[i][row]);
-            if(entireBoard[i][row] !== userCharacter){
+             
+            if(entireBoard[i][col] !== userCharacter){
                 verticalMatch = false;
+                
+            console.log("!vertical match");
             }
         }
         //check for a row/horizontal match
         for(let i=0; i< row1.length; i++){
-            //console.log(entireBoard[col][i]);
-            if(entireBoard[col][i] !== userCharacter){
+            console.log(entireBoard[row][i]);
+            if(entireBoard[row][i] !== userCharacter){
                 horizontalMatch = false;
+                console.log("!h match");
             }
+            
         }
 
         //and now for the diagonals 
@@ -82,13 +90,16 @@ const myBoard =(function(){
         for(let i=0; i< row1.length; i++){
             if(entireBoard[i][i] !== userCharacter){
                 diagonalMatchL=false;
+
+                console.log("!left diag");
             }
+           
         }
-        
-        if(entireBoard[2][0] && entireBoard[1][1] && entireBoard[0][2] !== userCharacter){
+       
+        if((entireBoard[2][0] || entireBoard[1][1] || entireBoard[0][2]) !== userCharacter){
             diagonalMatchR = false;
-            console.log(diagonalMatchR);
-        }
+            console.log("!right diag");
+        } 
         if(diagonalMatchR || diagonalMatchL || verticalMatch || horizontalMatch == true){
             isWinner = true;
         }
@@ -129,6 +140,7 @@ const displayBoard =(function (){
     'use strict';
     //you can have a module pattern object inside another module pattern??
     let boardData = myBoard.getBoard();  
+    let boardClone = myBoard.getBoard();
     const thePlayer = player();
     const playerPiece = thePlayer.getChar();
     function generate (){
@@ -153,26 +165,18 @@ const displayBoard =(function (){
         let playerForm = document.createElement("FORM");
         playerForm.setAttribute("id", "playerForm");
 
-        let playerTitle = document.createElement("LABEL");
-        playerTitle.textContent = "Player Name: ";
-        let playerNameInput = document.createElement("INPUT");
-        playerNameInput.setAttribute("type", "text");
-        let submit = document.createElement("BUTTON");
-        submit.setAttribute("type", "button");
-        submit.textContent = "Submit Name";
-        submit.addEventListener("click", function(e){
-            thePlayer.setName(playerNameInput);
-        })
-
-
-        container.appendChild(playerForm);
-        container.appendChild(playerTitle);
-        container.appendChild(playerNameInput);
-        container.appendChild(submit);
-        
-
-
-
+        function reset(){
+            boardData = boardClone;
+            let board = document.querySelector(".boardContainer");
+            let parts = board.get
+            for(let a = 0; a < boardData[0].length; a++){
+                for(let b=0; b < boardData[0].length; b++){
+                    let elem = parts. 
+                    elem.textContent = boardData[a][b];
+                    
+                }
+            }
+         }
 
         for(let i =0; i < boardData[0].length ; i++){
             for(let j =0; j < boardData[0].length ; j++){
@@ -187,23 +191,35 @@ const displayBoard =(function (){
             }
         }
         container.appendChild(board);   
+
+        let playerTitle = document.createElement("LABEL");
+        playerTitle.textContent = "Player Name: ";
+        let playerNameInput = document.createElement("INPUT");
+        playerNameInput.setAttribute("type", "text");
+        let submit = document.createElement("BUTTON");
+        submit.setAttribute("type", "button");
+        submit.textContent = "Submit Name";
+        submit.addEventListener("click", function(e){
+            thePlayer.setName(playerNameInput);
+        })
+
+        let clear = document.createElement("BUTTON");
+        clear.setAttribute("type", "button");
+        clear.textContent = "Clear Board";
+        clear.addEventListener("click", function(e){
+             reset();
+        })
+
+        container.appendChild(playerForm);
+        container.appendChild(playerTitle);
+        container.appendChild(playerNameInput);
+        container.appendChild(submit);
+        container.appendChild(clear);
+        
     }
     //alright now we want to create a function that will take a nodelist of all the elements here and add an event listener to each 
     //because after all, the indices of the array above and on the board are the exact same 
-    function toggle(a,b){
-        const board= document.querySelector("#container");
-        const matches = container.querySelectAll("DIV");
-        let matchArray= Array.from(matches);
-        matchArray.forEach(function(elem){
-            elem.addEventListener("click", function(e){
-                
-                elem.textContent="hello";
-
-            })
-        })
-
-
-    }
+    
 
 
     return {
