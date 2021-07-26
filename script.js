@@ -16,9 +16,9 @@
 const myBoard =(function(){
     'use strict'; 
    
-    let row1 = ["unset", "sadf", "x"];
-    let row2 = ["unset", "x", "unset"];
-    let row3 = ["x", "unset", "asf"];
+    let row1 = ["_", "_", "_"];
+    let row2 = ["_", "_", "_"];
+    let row3 = ["_", "_", "_"];
 
     let entireBoard = [
         row1, 
@@ -38,13 +38,13 @@ const myBoard =(function(){
     //i'm fairly certain we'll wind up doing this in the factory function we use to make players but for now we're just storing it here
     
     //now for a function to choose where our character goes....
-    function setPlace(a, b, board){
+    function setPlace(a, b, board, playerChar){
         rowSelection= a
         
       
         
         columnSelect = b
-   
+        userCharacter = playerChar;
         
         board[rowSelection][columnSelect] = userCharacter;
 
@@ -110,28 +110,27 @@ const myBoard =(function(){
 // we need to create players and some how add theem into the module pattern
 //so, let's make the factory function and go from there 
 
-const Player = (playerName, playerCharacter) => {
-
+const player = () => {
+    const setName = a => {
+        playerName = a;
+    }
     const getName = () => playerName;
     
-    const setChar = () => function(){
-
-        let userInput = prompt("please select 'x' or 'o': ");
-        
-        playerCharacter = userInput; 
-    }
+    let playerCharacter = "x";
     
     const getChar = () => playerCharacter; 
 
-    return { getName, setChar, getChar };
+    return { getName, getChar, setName };
 
-}
+};
 //now for the HTML DOM 
 
 const displayBoard =(function (){
     'use strict';
     //you can have a module pattern object inside another module pattern??
-    let boardData = myBoard.getBoard();
+    let boardData = myBoard.getBoard();  
+    const thePlayer = player();
+    const playerPiece = thePlayer.getChar();
     function generate (){
         const container = document.querySelector("#container");
         /** 
@@ -142,15 +141,46 @@ const displayBoard =(function (){
          * 
          * and we may have to use data attributes to hook the array indices up to the HTML DOM elements 
          */
+
+        //alright so what we need to do here is create the player characters through a form and also give them the ability to chose which character they'd like
+        //to use 
+        //after that we append onto the container 
+        //and we'll also want to create a reset function
+
+
         const board = document.createElement("DIV");
         board.setAttribute("class", "boardContainer");
+        let playerForm = document.createElement("FORM");
+        playerForm.setAttribute("id", "playerForm");
+
+        let playerTitle = document.createElement("LABEL");
+        playerTitle.textContent = "Player Name: ";
+        let playerNameInput = document.createElement("INPUT");
+        playerNameInput.setAttribute("type", "text");
+        let submit = document.createElement("BUTTON");
+        submit.setAttribute("type", "button");
+        submit.textContent = "Submit Name";
+        submit.addEventListener("click", function(e){
+            thePlayer.setName(playerNameInput);
+        })
+
+
+        container.appendChild(playerForm);
+        container.appendChild(playerTitle);
+        container.appendChild(playerNameInput);
+        container.appendChild(submit);
+        
+
+
+
+
         for(let i =0; i < boardData[0].length ; i++){
             for(let j =0; j < boardData[0].length ; j++){
                 let boardElem = document.createElement("DIV");
                 boardElem.setAttribute("id", "boardElement");
                 boardElem.textContent = boardData[i][j];
                 boardElem.addEventListener("click", function(e){
-                    myBoard.setPlace(i,j,boardData);
+                    myBoard.setPlace(i,j,boardData, playerPiece);
                     boardElem.textContent = boardData[i][j];
                 })
                 board.appendChild(boardElem);
