@@ -50,35 +50,40 @@ const myBoard =(function(){
     let userCharacter= "unset";
     let rowSelection = 0;
     let columnSelect = 0;
+    let gameOver = false; 
 
-    function setPlace(a, b, board, playerChar){
-        if(entireBoard[a][b] != playerChar){
-            rowSelection= a;
-            columnSelect = b;
-            userCharacter = playerChar;
-            
-            board[rowSelection][columnSelect] = userCharacter;
-            entireBoard[rowSelection][columnSelect] = userCharacter;
+    function setPlace(a, b, board, player){
+        let currentPlayer = player;
+        let playerChar = currentPlayer.getChar();
+        if(gameOver == false){
+            if(entireBoard[a][b] != playerChar){
+                rowSelection= a;
+                columnSelect = b;
+                userCharacter = playerChar; 
+                board[rowSelection][columnSelect] = userCharacter;
+                entireBoard[rowSelection][columnSelect] = userCharacter;
 
-            if(checkForWinner(rowSelection, columnSelect) === true){
-                return true;
-            } else {
-                return false;
-            }
-        } 
-         
+                if(checkForWinner(rowSelection, columnSelect) === true){
+                    let message = document.querySelector(".gameMessage");
+                    message.textContent = `${currentPlayer.getName()} wins!`;
+                    currentPlayer.winner();
+                    gameOver = true; 
+                    player.reset();
+                } 
+            } 
+        }   
     }
 
 
     function checkForWinner(row,col){
-        let isWinner = false;
+        let w = false;
         //we can use the properties of multidimensional arrays to help us 
         //it's easier to prove something false than true 
         let horizontalMatch= true;
         let verticalMatch = true;
         let diagonalMatchL= true;
         let diagonalMatchR= true;
-       
+
         //check for a column/vertical match
         for(let i =0; i < row1.length; i++){
              
@@ -106,10 +111,10 @@ const myBoard =(function(){
             diagonalMatchR = false;
         } 
         if(diagonalMatchR || diagonalMatchL || verticalMatch || horizontalMatch == true){
-            isWinner = true;
+            w = true;
         }
     
-        return isWinner;
+        return w;
     
     }
            return {
@@ -126,6 +131,7 @@ const myBoard =(function(){
 
 const player = (name, piece) => {
     let playerName;
+    let isWinner = false; 
     playerName = name;
     let playerCharacter = piece;
     const setName = a => {
@@ -135,10 +141,19 @@ const player = (name, piece) => {
         playerName = a;
         return playerName;
     }
+    const winner = () => {
+        isWinner = true;
+    }
+    const reset = () => {
+        isWinner = false;
+    }
+
+    const winStatus = () => isWinner;
     const getName = () => playerName;
     const getChar = () => playerCharacter; 
     
-    return { getName, getChar, setName };
+
+    return { getName, getChar, setName, winner, winStatus, reset };
 
 };
 
@@ -179,21 +194,16 @@ const displayBoard =(function (){
         container.appendChild(playerForm);
     }
 
+    function makeMove(a,b, board){
 
-
-
-
-
-
-    function makeMove(){
-        turn(determinant);
+        let player = turn(determinant);
         let message = document.querySelector(".gameMessage");
-        if(determinant ==0){
-            message.textContent = "It is currently your turn"; 
-        } else {
-            message.textContent = "It is Player 2's turn";
-        }
-
+            if(determinant ==0){
+                message.textContent = "It is currently your turn"; 
+            } else {
+                message.textContent = "It is currently Player 2's turn";
+            }
+            myBoard.setPlace(a,b, board,player);
     }
 
     function turn(place){
@@ -208,15 +218,11 @@ const displayBoard =(function (){
             currentPlayer = players[1];
             place--;
         }
-    
         determinant = place;
 
         return currentPlayer;
 
     }
-
-
-   
     
     function generate (){
         /** 
@@ -249,21 +255,9 @@ const displayBoard =(function (){
             for(let j =0; j < boardData[0].length ; j++){
                 let boardElem = document.createElement("DIV");
                 boardElem.setAttribute("id", "boardElement");
-                boardElem.textContent = boardData[i][j];
                 boardElem.addEventListener("click", function(e){
-                    // if( myBoard.setPlace(i,j,boardData, playerPiece) == true) {
-                    //     if(player1.getName !== undefined){
-                    //         alert("You win, " + player1.getName() + "! Game over!");
-                    //     } else {
-                    //         alert("You win, player! Game over!");
-                    //     }
-                    //     boardElem.textContent = boardData[i][j];
-                    // } else {
-                        
-                    //      boardElem.textContent = boardData[i][j];
-                    // }
-                    console.log(determinant);
-                    makeMove();
+                    makeMove(i,j, boardData);
+                    boardElem.textContent = boardData[i][j];
                 })
                 board.appendChild(boardElem);
             }
@@ -289,6 +283,8 @@ const displayBoard =(function (){
         for(let i =0; i < boardElem.length; i++){
             boardElem[i].textContent = clonedBoardData[i];    
         }
+        
+        
         myBoard.reset();
     }
     return {
