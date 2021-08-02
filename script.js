@@ -92,11 +92,11 @@
                  columnSelect = b;
                  userCharacter = playerChar; 
                  board[rowSelection][columnSelect] = userCharacter;
-                 if(checkForWinner(rowSelection, columnSelect) === true){
-                     let message = document.querySelector(".gameMessage");
-                     message.textContent = `${currentPlayer.getName()} wins!`;
+                 if(checkForWinner(rowSelection, columnSelect) == true){
+                     return true;
                  } 
-                           
+                 
+                return false;            
              }
      }
  
@@ -139,6 +139,13 @@
          }
          return w;  
      }
+
+     
+
+
+
+
+
          
          function makeMove(a,b, board){
  
@@ -148,9 +155,13 @@
                      message.textContent = "It is currently your turn"; 
                  } else {
                      message.textContent = "It is currently Player 2's turn";
-                 }
-             
-             setPlace(a,b, board,player);             
+                 }             
+             if(setPlace(a,b, board,player) == true){  
+                 message.textContent = `${player.getName()} wins!`;
+
+                 return true;
+             }            
+            return false; 
          }
      
          function turn(place){
@@ -237,9 +248,16 @@
                  let boardElem = document.createElement("DIV");
                  boardElem.setAttribute("id", "boardElement");
                  boardElem.addEventListener("click", function(e){ 
-                    myBoard.makeMove(i,j, boardData);
-                     boardElem.textContent = boardData[i][j];
-                     
+                     if(myBoard.makeMove(i,j, boardData)== true){
+                        boardElem.textContent = boardData[i][j];
+                        setTimeout(function() {
+                            reset();
+                        }, 2000);
+        
+                    } else {
+                        boardElem.textContent = boardData[i][j];
+                    }
+
                  })
                  board.appendChild(boardElem);
              }
@@ -263,6 +281,7 @@
             document.querySelector("#container");
             document.body.removeChild(container);
             generate();
+            myBoard.reset();
          }
 
 
