@@ -7,7 +7,6 @@
  * as for the players, we'll want to use a factory function 
  * 
  */
- console.log("e");
  const myBoard =(function(){
      'use strict'; 
      //variable declarations and initializations 
@@ -131,7 +130,7 @@
             
          }
         
-         if((entireBoard[2][0] || entireBoard[1][1] || entireBoard[0][2]) !== userCharacter){
+         if((entireBoard[2][0] && entireBoard[1][1] && entireBoard[0][2]) !== userCharacter){
              diagonalMatchR = false;
          } 
          if(diagonalMatchR || diagonalMatchL || verticalMatch || horizontalMatch == true){
@@ -283,10 +282,6 @@
             generate();
             myBoard.reset();
          }
-
-
-
-
      }
      //alright now we want to create a function that will take a nodelist of all the elements here and add an event listener to each 
      //because after all, the indices of the array above and on the board are the exact same 
